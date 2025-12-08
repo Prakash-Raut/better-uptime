@@ -9,7 +9,7 @@ export default function Dashboard({
 	customerState: ReturnType<typeof authClient.customer.state>;
 	session: typeof authClient.$Infer.Session;
 }) {
-	const hasProSubscription = customerState?.activeSubscriptions?.length! > 0;
+	const hasProSubscription = customerState?.activeSubscriptions?.length > 0;
 	console.log("Active subscriptions:", customerState?.activeSubscriptions);
 
 	return (

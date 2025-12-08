@@ -1,11 +1,11 @@
-import { betterAuth } from "better-auth";
-import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { polar, checkout, portal } from "@polar-sh/better-auth";
-import { polarClient } from "./lib/payments";
 import { db } from "@better-uptime/db";
 import * as schema from "@better-uptime/db/schema/auth";
+import { checkout, polar, portal } from "@polar-sh/better-auth";
+import { type Auth, betterAuth } from "better-auth";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { polarClient } from "./lib/payments";
 
-export const auth = betterAuth({
+export const auth: Auth = betterAuth({
 	database: drizzleAdapter(db, {
 		provider: "pg",
 
