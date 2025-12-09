@@ -3,8 +3,11 @@ import "dotenv/config";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
+import { monitorRoutes } from "./monitor/route";
+import { regionRoutes } from "./region/route";
+import type { AppContext } from "./types";
 
-const app = new Hono();
+const app = new Hono<AppContext>();
 
 app.use(logger());
 app.use(
@@ -17,10 +20,36 @@ app.use(
 	}),
 );
 
+app.use("*", async (c, next) => {
+	const session = await auth.api.getSession({ headers: c.req.raw.headers });
+	if (!session) {
+		c.set("user", null);
+		c.set("session", null);
+		await next();
+		return;
+	}
+	c.set("user", session.user);
+	c.set("session", session.session);
+	await next();
+});
+
 app.on(["POST", "GET"], "/api/auth/*", (c) => auth.handler(c.req.raw));
 
 app.get("/", (c) => {
 	return c.text("OK");
 });
+
+app.get("/session", (c) => {
+	const session = c.get("session");
+	const user = c.get("user");
+
+	return c.json({
+		session,
+		user,
+	});
+});
+
+app.route("/monitors", monitorRoutes);
+app.route("/regions", regionRoutes);
 
 export default app;
