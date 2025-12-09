@@ -2,7 +2,7 @@
 
 import { useForm } from "@tanstack/react-form";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import z from "zod";
 import Loader from "@/components/loader";
@@ -59,8 +59,7 @@ export const SignInForm = () => {
 			},
 			{
 				onSuccess: () => {
-					router.push("/dashboard");
-					toast.success("Sign in successful");
+					redirect("/dashboard");
 				},
 				onError: (error) => {
 					toast.error(error.error.message || error.error.statusText);

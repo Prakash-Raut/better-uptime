@@ -8,9 +8,9 @@ import { polarClient } from "./lib/payments";
 export const auth: Auth = betterAuth({
 	database: drizzleAdapter(db, {
 		provider: "pg",
-
 		schema: schema,
 	}),
+	baseURL: process.env.BETTER_AUTH_URL,
 	trustedOrigins: [process.env.CORS_ORIGIN || ""],
 	emailAndPassword: {
 		enabled: true,
@@ -26,10 +26,6 @@ export const auth: Auth = betterAuth({
 			sameSite: "none",
 			secure: true,
 			httpOnly: true,
-			partitioned: true, // New browser standards will mandate this for foreign cookies
-		},
-		crossSubDomainCookies: {
-			enabled: true,
 		},
 	},
 	plugins: [
