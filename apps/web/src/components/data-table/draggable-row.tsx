@@ -3,11 +3,9 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { flexRender, type Row } from "@tanstack/react-table";
-import type { z } from "zod";
-import type { schema } from "../../features/monitors/components/monitor-schema";
 import { TableCell, TableRow } from "../ui/table";
 
-export const DraggableRow = ({ row }: { row: Row<z.infer<typeof schema>> }) => {
+export const DraggableRow = ({ row }: { row: Row<any> }) => {
 	const { transform, transition, setNodeRef, isDragging } = useSortable({
 		id: row.original.id,
 	});
