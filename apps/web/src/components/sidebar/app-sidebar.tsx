@@ -1,15 +1,21 @@
 "use client";
 
 import {
-	GlobeIcon,
-	HomeIcon,
-	NotebookIcon,
-	Settings2,
-	SquareTerminal,
-} from "lucide-react";
+	IconDashboard,
+	IconDatabase,
+	IconFileWord,
+	IconGlobe,
+	IconHelp,
+	IconInnerShadowTop,
+	IconRadio,
+	IconReport,
+	IconSearch,
+	IconSettings,
+} from "@tabler/icons-react";
+import Link from "next/link";
 import type { ComponentProps } from "react";
-
 import { NavMain } from "@/components/sidebar/nav-main";
+import { NavSecondary } from "@/components/sidebar/nav-secondary";
 import { NavUser } from "@/components/sidebar/nav-user";
 import {
 	Sidebar,
@@ -19,64 +25,92 @@ import {
 	SidebarMenu,
 	SidebarMenuButton,
 	SidebarMenuItem,
-	SidebarRail,
 } from "@/components/ui/sidebar";
-import { authClient } from "@/lib/auth-client";
-import { UptimeLogo } from "../logo";
 
-// This is sample data.
 const data = {
+	user: {
+		name: "shadcn",
+		email: "m@example.com",
+		avatar: "/avatars/shadcn.jpg",
+	},
 	navMain: [
 		{
-			title: "Home",
+			title: "Dashboard",
 			url: "/dashboard",
-			icon: HomeIcon,
+			icon: IconDashboard,
 		},
 		{
 			title: "Monitors",
 			url: "/dashboard/monitors",
-			icon: SquareTerminal,
+			icon: IconGlobe,
 		},
 		{
-			title: "Status Pages",
+			title: "Status pages",
 			url: "/dashboard/status-pages",
-			icon: GlobeIcon,
+			icon: IconRadio,
 		},
-		{
-			title: "Reports",
-			url: "/dashboard/reports",
-			icon: NotebookIcon,
-		},
+	],
+	navSecondary: [
 		{
 			title: "Settings",
-			url: "/dashboard/settings",
-			icon: Settings2,
+			url: "#",
+			icon: IconSettings,
+		},
+		{
+			title: "Get Help",
+			url: "#",
+			icon: IconHelp,
+		},
+		{
+			title: "Search",
+			url: "#",
+			icon: IconSearch,
+		},
+	],
+	documents: [
+		{
+			name: "Data Library",
+			url: "#",
+			icon: IconDatabase,
+		},
+		{
+			name: "Reports",
+			url: "#",
+			icon: IconReport,
+		},
+		{
+			name: "Word Assistant",
+			url: "#",
+			icon: IconFileWord,
 		},
 	],
 };
 
 export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
-	const { data: session } = authClient.useSession();
-
 	return (
 		<Sidebar collapsible="icon" {...props}>
 			<SidebarHeader>
 				<SidebarMenu>
-					<SidebarMenuItem className="flex items-center gap-1.5">
-						<SidebarMenuButton>
-							<UptimeLogo />
-							<span className="font-medium text-lg text-white">Uptime</span>
+					<SidebarMenuItem>
+						<SidebarMenuButton
+							asChild
+							className="data-[slot=sidebar-menu-button]:p-1.5!"
+						>
+							<Link href="#">
+								<IconInnerShadowTop className="size-5!" />
+								<span className="font-semibold text-base">Better Uptime</span>
+							</Link>
 						</SidebarMenuButton>
 					</SidebarMenuItem>
 				</SidebarMenu>
 			</SidebarHeader>
 			<SidebarContent>
 				<NavMain items={data.navMain} />
+				<NavSecondary items={data.navSecondary} className="mt-auto" />
 			</SidebarContent>
 			<SidebarFooter>
-				{session?.user && <NavUser user={session?.user} />}
+				<NavUser user={data.user} />
 			</SidebarFooter>
-			<SidebarRail />
 		</Sidebar>
 	);
 }

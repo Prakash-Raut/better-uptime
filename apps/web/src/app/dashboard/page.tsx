@@ -1,11 +1,10 @@
-import { requireAuth } from "@/lib/auth-utils";
+import { SectionCards } from "@/components/section-cards";
 
-export default async function Page() {
-	await requireAuth();
-
+export default function Page() {
 	return (
-		<div>
-			<h1>Dashboard</h1>
+		<div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+			<SectionCards />
+			<div className="px-4 lg:px-6">Chart Goes Here</div>
 		</div>
 	);
 }

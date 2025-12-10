@@ -1,13 +1,8 @@
 import type { Metadata } from "next";
-import { AppSidebar } from "@/components/sidebar/app-sidebar";
 
-import { DashboardBreadcrumb } from "@/components/sidebar/dash-breadcrumb";
-import { Separator } from "@/components/ui/separator";
-import {
-	SidebarInset,
-	SidebarProvider,
-	SidebarTrigger,
-} from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/sidebar/app-sidebar";
+import { SiteHeader } from "@/components/site-header";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 export const metadata: Metadata = {
 	title: "Dashboard",
@@ -20,20 +15,22 @@ export default function DashboardLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<SidebarProvider>
-			<AppSidebar />
+		<SidebarProvider
+			style={
+				{
+					"--sidebar-width": "calc(var(--spacing) * 72)",
+					"--header-height": "calc(var(--spacing) * 12)",
+				} as React.CSSProperties
+			}
+		>
+			<AppSidebar variant="inset" />
 			<SidebarInset>
-				<header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-					<div className="flex items-center gap-2 px-4">
-						<SidebarTrigger className="-ml-1" />
-						<Separator
-							orientation="vertical"
-							className="mr-2 data-[orientation=vertical]:h-4"
-						/>
-						<DashboardBreadcrumb />
+				<SiteHeader />
+				<div className="flex flex-1 flex-col">
+					<div className="@container/main flex flex-1 flex-col gap-2">
+						{children}
 					</div>
-				</header>
-				<div className="flex flex-1 flex-col gap-4 p-4 pt-0">{children}</div>
+				</div>
 			</SidebarInset>
 		</SidebarProvider>
 	);

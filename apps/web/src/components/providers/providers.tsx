@@ -1,8 +1,9 @@
 "use client";
 
+import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { Toaster } from "../ui/sonner";
 import { QueryProvider } from "./query-provider";
 import { ThemeProvider } from "./theme-provider";
-import { Toaster } from "./ui/sonner";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
 	return (
@@ -12,7 +13,9 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 			enableSystem
 			disableTransitionOnChange
 		>
-			<QueryProvider>{children}</QueryProvider>
+			<QueryProvider>
+				<NuqsAdapter>{children}</NuqsAdapter>
+			</QueryProvider>
 			<Toaster richColors />
 		</ThemeProvider>
 	);

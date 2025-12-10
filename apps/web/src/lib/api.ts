@@ -8,3 +8,23 @@ const api = axios.create({
 export const getRegions = async () => {
 	return api.get("/regions");
 };
+
+type MonitorParams = {
+	page?: number;
+	pageSize?: number;
+	search?: string;
+};
+
+type Monitor = {
+	url: string;
+	frequency: number;
+	regionId: string;
+};
+
+export const getMonitors = async (params: MonitorParams) => {
+	return api.get("/monitors", { params });
+};
+
+export const createMonitor = async (monitor: Monitor) => {
+	return api.post("/monitors", monitor);
+};

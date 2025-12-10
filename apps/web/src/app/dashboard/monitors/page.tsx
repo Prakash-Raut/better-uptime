@@ -1,10 +1,8 @@
-import { CreateMonitorForm } from "./monitor-create-dialog";
+import { MonitorView } from "@/features/monitors/components/monitor";
+import { requireAuth } from "@/lib/auth-utils";
 
-export default function Page() {
-	return (
-		<div className="flex items-center justify-between">
-			<h1>Monitors</h1>
-			<CreateMonitorForm />
-		</div>
-	);
+export default async function Page() {
+	await requireAuth();
+
+	return <MonitorView />;
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useForm } from "@tanstack/react-form";
-import { PlusIcon } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -31,17 +31,22 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { useRegions } from "@/features/regions/hooks";
+import { useCreateMonitor } from "../hooks";
 
 const formSchema = z.object({
+	name: z.string().min(1, "Name is required"),
 	url: z.url("Please enter a valid URL"),
 	frequency: z.enum(["5m", "10m", "30m"]),
 	regionId: z.string(),
 });
 
 export function CreateMonitorForm() {
+	const [open, setOpen] = useState(false);
+	const createMonitor = useCreateMonitor();
 	const { data: regions } = useRegions();
 	const form = useForm({
 		defaultValues: {
+			name: "",
 			url: "https://",
 			frequency: "5m",
 			regionId: "",
@@ -56,17 +61,28 @@ export function CreateMonitorForm() {
 				return;
 			}
 			console.log(value);
-			// createMonitor.mutate(value.url);
+			createMonitor.mutate({
+				name: value.name,
+				url: value.url,
+				frequency: convertStringFrequencyToNumber(value.frequency),
+				regionId: value.regionId,
+			});
+			form.reset();
+			setOpen(false);
 		},
 	});
 
+	const convertStringFrequencyToNumber = (frequency: string) => {
+		if (frequency === "1m") return 60;
+		if (frequency === "5m") return 300;
+		if (frequency === "10m") return 600;
+		return 60;
+	};
+
 	return (
-		<Dialog>
+		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
-				<Button>
-					<PlusIcon className="h-4 w-4" />
-					Add Monitor
-				</Button>
+				<Button>Create monitor</Button>
 			</DialogTrigger>
 			<DialogContent>
 				<DialogHeader>
@@ -83,6 +99,32 @@ export function CreateMonitorForm() {
 					}}
 					className="space-y-4"
 				>
+					<FieldGroup>
+						<form.Field
+							name="name"
+							children={(field) => {
+								const isInvalid =
+									field.state.meta.isTouched && !field.state.meta.isValid;
+								return (
+									<Field data-invalid={isInvalid}>
+										<FieldLabel htmlFor={field.name}>Monitor Name</FieldLabel>
+										<Input
+											id={field.name}
+											name={field.name}
+											value={field.state.value}
+											onBlur={field.handleBlur}
+											onChange={(e) => field.handleChange(e.target.value)}
+											aria-invalid={isInvalid}
+											autoComplete="off"
+										/>
+										{isInvalid && (
+											<FieldError errors={field.state.meta.errors} />
+										)}
+									</Field>
+								);
+							}}
+						/>
+					</FieldGroup>
 					<FieldGroup>
 						<form.Field
 							name="url"
