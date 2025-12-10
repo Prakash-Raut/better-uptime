@@ -36,7 +36,11 @@ app.use("*", async (c, next) => {
 app.on(["POST", "GET"], "/api/auth/*", (c) => auth.handler(c.req.raw));
 
 app.get("/", (c) => {
-	return c.text("OK");
+	return c.text("Better Uptime API");
+});
+
+app.get("/health", (c) => {
+	return c.text("Healthy");
 });
 
 app.get("/session", (c) => {

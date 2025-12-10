@@ -1,0 +1,16 @@
+[
+	{
+		"id": "1",
+		"name": "Better Uptime Backend Server",
+		"url": "https://api.betteruptime.com",
+		"frequency": 180,
+		"userId": "101"
+	},
+	{
+		"id": "2",
+		"name": "Better Uptime Frontend Server",
+		"url": "https://www.betteruptime.com",
+		"frequency": 180,
+		"userId": "101"
+	}
+]

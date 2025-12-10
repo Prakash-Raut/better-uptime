@@ -5,7 +5,6 @@ import Link from "next/link";
 import { redirect, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import z from "zod";
-import Loader from "@/components/loader";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -21,7 +20,6 @@ import { authClient } from "@/lib/auth-client";
 
 export const SignInForm = () => {
 	const router = useRouter();
-	const { isPending } = authClient.useSession();
 
 	const form = useForm({
 		defaultValues: {
@@ -67,10 +65,6 @@ export const SignInForm = () => {
 			},
 		);
 	};
-
-	if (isPending) {
-		return <Loader />;
-	}
 
 	return (
 		<div className="mx-auto mt-10 w-full max-w-md p-6">
