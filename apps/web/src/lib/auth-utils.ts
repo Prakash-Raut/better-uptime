@@ -16,3 +16,13 @@ export const requireAuth = async () => {
 		user: session?.user,
 	};
 };
+
+export const requireNoAuth = async () => {
+	const session = await auth.api.getSession({
+		headers: await headers(),
+	});
+
+	if (session) {
+		redirect("/dashboard");
+	}
+};
