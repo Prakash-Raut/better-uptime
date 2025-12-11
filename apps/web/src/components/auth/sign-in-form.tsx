@@ -2,7 +2,7 @@
 
 import { useForm } from "@tanstack/react-form";
 import Link from "next/link";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import z from "zod";
 import { Button } from "@/components/ui/button";
@@ -54,11 +54,9 @@ export const SignInForm = () => {
 		await authClient.signIn.social(
 			{
 				provider: "google",
+				callbackURL: "/dashboard/monitors",
 			},
 			{
-				onSuccess: () => {
-					redirect("/dashboard");
-				},
 				onError: (error) => {
 					toast.error(error.error.message || error.error.statusText);
 				},
