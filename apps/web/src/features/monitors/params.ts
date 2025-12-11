@@ -1,4 +1,4 @@
-import { createLoader, parseAsInteger, parseAsString } from "nuqs";
+import { createLoader, parseAsInteger, parseAsString } from "nuqs/server";
 import { PAGINATION } from "@/config/pagination";
 
 //Describe your search params, and reuse this in useQueryStates

@@ -1,4 +1,5 @@
 import { auth } from "@better-uptime/auth";
+import { db, monitor } from "@better-uptime/db";
 import "dotenv/config";
 import { Hono } from "hono";
 import { cors } from "hono/cors";

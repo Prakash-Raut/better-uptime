@@ -7,8 +7,6 @@ import {
 } from "@tabler/icons-react";
 import type { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
-import { z } from "zod";
-import { DragHandle } from "@/components/data-table/drag-handle";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -27,21 +25,9 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import type { Monitor } from "../server";
 
-export const schema = z.object({
-	id: z.number(),
-	name: z.string(),
-	url: z.string(),
-	status: z.string(),
-	frequency: z.string(),
-});
-
-export const monitorColumn: ColumnDef<z.infer<typeof schema>>[] = [
-	{
-		id: "drag",
-		header: () => null,
-		cell: ({ row }) => <DragHandle id={row.original.id} />,
-	},
+export const monitorColumn: ColumnDef<Monitor>[] = [
 	{
 		id: "select",
 		header: ({ table }) => (
@@ -111,10 +97,16 @@ export const monitorColumn: ColumnDef<z.infer<typeof schema>>[] = [
 		accessorKey: "frequency",
 		header: "Frequency",
 		cell: ({ row }) => {
-			const isAssigned = row.original.frequency !== "Assign frequency";
+			const frequency = row.original.frequency;
+			// Convert seconds to display format (e.g., 300 -> "5m", 600 -> "10m")
+			const formatFrequency = (seconds: number): string => {
+				if (seconds < 60) return `${seconds}s`;
+				if (seconds < 3600) return `${Math.floor(seconds / 60)}m`;
+				return `${Math.floor(seconds / 3600)}h`;
+			};
 
-			if (isAssigned) {
-				return row.original.frequency;
+			if (frequency && frequency > 0) {
+				return formatFrequency(frequency);
 			}
 
 			return (
@@ -128,7 +120,7 @@ export const monitorColumn: ColumnDef<z.infer<typeof schema>>[] = [
 							size="sm"
 							id={`${row.original.id}-frequency`}
 						>
-							<SelectValue placeholder="Assign reviewer" />
+							<SelectValue placeholder="Assign frequency" />
 						</SelectTrigger>
 						<SelectContent align="end">
 							<SelectItem value="5m">5m</SelectItem>

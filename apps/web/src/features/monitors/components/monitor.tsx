@@ -1,8 +1,14 @@
 "use client";
 
 import { DataTable } from "@/components/data-table/data-table";
-import { EntityContainer, EntitySearch } from "@/components/entity";
-import { Skeleton } from "@/components/ui/skeleton";
+import {
+	EntityContainer,
+	EntityEmptyView,
+	EntityErrorView,
+	EntityLoadingView,
+	EntityPagination,
+	EntitySearch,
+} from "@/components/entity";
 import { useEntitySearch } from "@/hooks/use-entity-search";
 import { useMonitorParams, useMonitors } from "../hooks";
 import { monitorColumn } from "./monitor-column";
@@ -35,6 +41,19 @@ export const MonitorSearch = () => {
 	);
 };
 
+export const MonitorPagination = () => {
+	const { data: monitors, isFetching } = useMonitors();
+	const [params, setParams] = useMonitorParams();
+	return (
+		<EntityPagination
+			page={monitors?.page}
+			totalPages={monitors?.totalPages}
+			onPageChange={(page) => setParams({ ...params, page })}
+			disabled={isFetching}
+		/>
+	);
+};
+
 export const MonitorContainer = ({
 	children,
 }: {
@@ -46,32 +65,52 @@ export const MonitorContainer = ({
 };
 
 export const MonitorLoading = () => {
-	return (
-		<div className="flex flex-col space-y-3">
-			<Skeleton className="h-[125px] w-[250px] rounded-xl" />
-			<div className="space-y-2">
-				<Skeleton className="h-4 w-[250px]" />
-				<Skeleton className="h-4 w-[200px]" />
-			</div>
-		</div>
-	);
+	return <EntityLoadingView message="Loading monitors..." />;
 };
 
 export const MonitorError = () => {
-	return null;
+	return (
+		<EntityErrorView message="An error occurred while loading monitors. Please try again later." />
+	);
 };
 
 export const MonitorEmpty = () => {
-	return null;
+	const handleCreateMonitor = () => {};
+
+	return (
+		<EntityEmptyView
+			message="You haven't created any monitors yet. Get started by creating your first monitor."
+			onNew={handleCreateMonitor}
+		/>
+	);
 };
 
-export const MonitorView = () => {
-	const { data: monitors, isPending } = useMonitors();
+export const MonitorList = () => {
+	const [params, setParams] = useMonitorParams();
+	const { data: monitors } = useMonitors();
+
+	const handlePaginationChange = (updater: any) => {
+		const next = updater({
+			pageIndex: params.page - 1,
+			pageSize: params.pageSize,
+		});
+
+		setParams({
+			...params,
+			page: next.pageIndex + 1,
+			pageSize: next.pageSize,
+		});
+
+		console.log("next pagination:", next);
+	};
+
 	return (
-		<MonitorContainer>
-			{!isPending && monitors && (
-				<DataTable columns={monitorColumn} data={monitors?.items} />
-			)}
-		</MonitorContainer>
+		<DataTable
+			columns={monitorColumn}
+			data={monitors.items}
+			pageCount={monitors.totalPages}
+			pagination={{ pageIndex: params.page - 1, pageSize: params.pageSize }}
+			onPaginationChange={handlePaginationChange}
+		/>
 	);
 };

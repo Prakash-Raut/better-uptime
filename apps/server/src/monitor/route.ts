@@ -18,7 +18,7 @@ const schema = z.object({
 const querySchema = z.object({
 	page: z.string().min(1, "Page must be at least 1").default("1"),
 	pageSize: z.string().min(1, "Page size must be at least 1").default("10"),
-	search: z.string().optional(),
+	search: z.string().default(""),
 });
 
 const monitorRoutes = new Hono<AppContext>();
@@ -76,7 +76,7 @@ monitorRoutes.get(
 		const { page, pageSize, search } = ctx.req.valid("query");
 
 		const [items, totalCount] = await Promise.all([
-			await db
+			db
 				.select()
 				.from(monitor)
 				.where(
@@ -87,7 +87,7 @@ monitorRoutes.get(
 				.orderBy(desc(monitor.updatedAt))
 				.execute(),
 
-			await db
+			db
 				.select({ count: count() })
 				.from(monitor)
 				.where(

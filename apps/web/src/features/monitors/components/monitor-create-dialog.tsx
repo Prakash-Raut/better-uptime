@@ -31,7 +31,8 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { useRegions } from "@/features/regions/hooks";
-import { useCreateMonitor } from "../hooks";
+
+// import { useCreateMonitor } from "../hooks";
 
 const formSchema = z.object({
 	name: z.string().min(1, "Name is required"),
@@ -42,7 +43,7 @@ const formSchema = z.object({
 
 export function CreateMonitorForm() {
 	const [open, setOpen] = useState(false);
-	const createMonitor = useCreateMonitor();
+	// const createMonitor = useCreateMonitor();
 	const { data: regions } = useRegions();
 	const form = useForm({
 		defaultValues: {
@@ -61,12 +62,12 @@ export function CreateMonitorForm() {
 				return;
 			}
 			console.log(value);
-			createMonitor.mutate({
-				name: value.name,
-				url: value.url,
-				frequency: convertStringFrequencyToNumber(value.frequency),
-				regionId: value.regionId,
-			});
+			// createMonitor.mutate({
+			// 	name: value.name,
+			// 	url: value.url,
+			// 	frequency: convertStringFrequencyToNumber(value.frequency),
+			// 	regionId: value.regionId,
+			// });
 			form.reset();
 			setOpen(false);
 		},

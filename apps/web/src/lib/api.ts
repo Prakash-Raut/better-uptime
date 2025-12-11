@@ -21,9 +21,9 @@ type Monitor = {
 	regionId: string;
 };
 
-export const getMonitors = async (params: MonitorParams) => {
-	return api.get("/monitors", { params });
-};
+// export const getMonitors = async (params: MonitorParams) => {
+// 	return api.get("/monitors", { params });
+// };
 
 export const createMonitor = async (monitor: Monitor) => {
 	return api.post("/monitors", monitor);
