@@ -7,14 +7,11 @@ export const requireAuth = async () => {
 		headers: await headers(),
 	});
 
-	if (!session?.session || !session?.user) {
+	if (!session) {
 		redirect("/login");
 	}
 
-	return {
-		session: session.session,
-		user: session?.user,
-	};
+	return session;
 };
 
 export const requireNoAuth = async () => {
