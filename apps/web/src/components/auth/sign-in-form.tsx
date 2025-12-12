@@ -54,7 +54,7 @@ export const SignInForm = () => {
 		await authClient.signIn.social(
 			{
 				provider: "google",
-				callbackURL: "/dashboard/monitors",
+				callbackURL: window.location.origin + "/dashboard/monitors",
 			},
 			{
 				onError: (error) => {
