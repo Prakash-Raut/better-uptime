@@ -53,6 +53,10 @@ monitorRoutes.post(
 			})
 			.returning();
 
+		// monitorEventsQueue.add("monitorCreated", {
+		// 	monitorId: createdMonitor?.id,
+		// });
+
 		return ctx.json(createdMonitor, 201);
 	},
 );
