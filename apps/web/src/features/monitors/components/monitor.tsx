@@ -46,8 +46,8 @@ export const MonitorPagination = () => {
 	const [params, setParams] = useMonitorParams();
 	return (
 		<EntityPagination
-			page={monitors?.page}
-			totalPages={monitors?.totalPages}
+			page={monitors?.data?.page ?? 0}
+			totalPages={monitors?.data?.totalPages ?? 0}
 			onPageChange={(page) => setParams({ ...params, page })}
 			disabled={isFetching}
 		/>
@@ -91,13 +91,13 @@ export const MonitorList = () => {
 
 	const handlePaginationChange = (updater: any) => {
 		const next = updater({
-			pageIndex: params.page - 1,
+			pageIndex: params.page,
 			pageSize: params.pageSize,
 		});
 
 		setParams({
 			...params,
-			page: next.pageIndex + 1,
+			page: next.pageIndex,
 			pageSize: next.pageSize,
 		});
 
@@ -107,9 +107,9 @@ export const MonitorList = () => {
 	return (
 		<DataTable
 			columns={monitorColumn}
-			data={monitors.items}
-			pageCount={monitors.totalPages}
-			pagination={{ pageIndex: params.page - 1, pageSize: params.pageSize }}
+			data={monitors?.data?.items ?? []}
+			pageCount={monitors?.data?.totalPages ?? 0}
+			pagination={{ pageIndex: params.page, pageSize: params.pageSize }}
 			onPaginationChange={handlePaginationChange}
 		/>
 	);

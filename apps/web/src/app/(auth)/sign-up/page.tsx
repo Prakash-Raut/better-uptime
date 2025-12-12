@@ -1,8 +1,16 @@
-import { SignUpForm } from "@/components/auth/sign-up-form";
-import { requireNoAuth } from "@/lib/auth-utils";
+"use client";
 
-export default async function Page() {
-	await requireNoAuth();
+import { useRouter } from "next/navigation";
+import { SignUpForm } from "@/components/auth/sign-up-form";
+import { authClient } from "@/lib/auth-client";
+
+export default function Page() {
+	const router = useRouter();
+	const { data: session } = authClient.useSession();
+
+	if (session) {
+		router.push("/dashboard");
+	}
 
 	return <SignUpForm />;
 }

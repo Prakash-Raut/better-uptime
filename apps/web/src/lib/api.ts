@@ -15,16 +15,16 @@ type MonitorParams = {
 	search?: string;
 };
 
-type Monitor = {
+type MonitorInput = {
 	url: string;
 	frequency: number;
 	regionId: string;
 };
 
-// export const getMonitors = async (params: MonitorParams) => {
-// 	return api.get("/monitors", { params });
-// };
+export const getMonitors = async (params: MonitorParams) => {
+	return api.get("/monitors", { params });
+};
 
-export const createMonitor = async (monitor: Monitor) => {
-	return api.post("/monitors", monitor);
+export const createMonitor = async (input: MonitorInput) => {
+	return api.post("/monitors", input);
 };

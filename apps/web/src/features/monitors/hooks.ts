@@ -1,19 +1,19 @@
 "use client";
 
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useQueryStates } from "nuqs";
+import { getMonitors } from "@/lib/api";
 import { monitorsParams } from "./params";
-import { getMonitors } from "./server";
 
 // Hook to get monitor params using query states
 export const useMonitorParams = () => {
 	return useQueryStates(monitorsParams);
 };
 
-// Hook to fetch multiple monitors using suspense
+// Hook to fetch multiple monitors
 export const useMonitors = () => {
 	const [params] = useMonitorParams();
-	return useSuspenseQuery({
+	return useQuery({
 		queryKey: ["monitors", params],
 		queryFn: () => getMonitors(params),
 	});
