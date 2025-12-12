@@ -1,9 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { Suspense } from "react";
 import {
 	MonitorContainer,
 	MonitorList,
+	MonitorLoading,
 } from "@/features/monitors/components/monitor";
 import { authClient } from "@/lib/auth-client";
 
@@ -17,7 +19,9 @@ export default function Page() {
 
 	return (
 		<MonitorContainer>
-			<MonitorList />
+			<Suspense fallback={<MonitorLoading />}>
+				<MonitorList />
+			</Suspense>
 		</MonitorContainer>
 	);
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { DataTable } from "@/components/data-table/data-table";
 import {
 	EntityContainer,
@@ -60,7 +61,17 @@ export const MonitorContainer = ({
 	children: React.ReactNode;
 }) => {
 	return (
-		<EntityContainer header={<MonitorsHeader />}>{children}</EntityContainer>
+		<EntityContainer
+			header={
+				<>
+					<Suspense fallback={null}>
+						<MonitorsHeader />
+					</Suspense>
+				</>
+			}
+		>
+			{children}
+		</EntityContainer>
 	);
 };
 

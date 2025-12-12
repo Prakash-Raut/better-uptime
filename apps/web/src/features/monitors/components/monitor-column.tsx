@@ -25,7 +25,14 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import type { Monitor } from "../server";
+
+type Monitor = {
+	id: string;
+	name: string;
+	url: string;
+	status: string;
+	frequency: number;
+};
 
 export const monitorColumn: ColumnDef<Monitor>[] = [
 	{
