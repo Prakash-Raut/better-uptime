@@ -28,3 +28,7 @@ export const getMonitors = async (params: MonitorParams) => {
 export const createMonitor = async (input: MonitorInput) => {
 	return api.post("/monitors", input);
 };
+
+export const getMonitor = async (id: string) => {
+	return api.get(`/monitors/${id}`);
+};

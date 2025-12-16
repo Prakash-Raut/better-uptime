@@ -67,7 +67,10 @@ export const monitorColumn: ColumnDef<Monitor>[] = [
 		cell: ({ row }) => {
 			return (
 				<div className="w-32">
-					<Link href="#" className="capitalize">
+					<Link
+						href={`/dashboard/monitors/${row.original.id}`}
+						className="capitalize"
+					>
 						{row.original.name}
 					</Link>
 				</div>

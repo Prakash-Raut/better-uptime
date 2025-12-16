@@ -1,4 +1,13 @@
-import { and, count, db, desc, eq, ilike, monitor } from "@better-uptime/db";
+import {
+	and,
+	count,
+	db,
+	desc,
+	eq,
+	ilike,
+	monitor,
+	tick,
+} from "@better-uptime/db";
 import { Hono } from "hono";
 import { validator } from "hono/validator";
 import { z } from "zod";
@@ -117,5 +126,34 @@ monitorRoutes.get(
 		});
 	},
 );
+
+monitorRoutes.get("/:id", async (ctx) => {
+	const user = ctx.get("user");
+	const id = ctx.req.param("id");
+
+	if (!id) {
+		return ctx.json({ error: "Monitor ID is required" }, 400);
+	}
+
+	if (!user) {
+		return ctx.json({ error: "Unauthorized" }, 401);
+	}
+
+	const [singleMonitor] = await db
+		.select({
+			monitor: monitor,
+			tick: tick,
+		})
+		.from(monitor)
+		.leftJoin(tick, eq(monitor.id, tick.monitorId))
+		.where(and(eq(monitor.id, id), eq(monitor.userId, user.id)))
+		.execute();
+
+	if (!singleMonitor) {
+		return ctx.json({ error: "Monitor not found" }, 404);
+	}
+
+	return ctx.json(singleMonitor, 200);
+});
 
 export { monitorRoutes };

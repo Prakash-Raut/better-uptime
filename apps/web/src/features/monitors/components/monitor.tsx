@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { Suspense } from "react";
 import { DataTable } from "@/components/data-table/data-table";
 import {
@@ -10,18 +11,21 @@ import {
 	EntityPagination,
 	EntitySearch,
 } from "@/components/entity";
+import { Button } from "@/components/ui/button";
 import { useEntitySearch } from "@/hooks/use-entity-search";
 import { useMonitorParams, useMonitors } from "../hooks";
 import { monitorColumn } from "./monitor-column";
-import { CreateMonitorForm } from "./monitor-create-dialog";
 
 export const MonitorsHeader = () => {
+	const router = useRouter();
 	return (
 		<>
 			<h2 className="wrap-break-word font-semibold text-2xl">Monitors</h2>
 			<div className="flex items-center gap-2">
 				<MonitorSearch />
-				<CreateMonitorForm />
+				<Button onClick={() => router.push("/dashboard/monitors/new")}>
+					Create monitor
+				</Button>
 			</div>
 		</>
 	);

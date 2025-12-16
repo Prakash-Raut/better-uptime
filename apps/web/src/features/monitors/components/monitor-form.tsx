@@ -1,18 +1,16 @@
 "use client";
 
 import { useForm } from "@tanstack/react-form";
-import { useState } from "react";
-import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger,
-} from "@/components/ui/dialog";
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import {
 	Field,
 	FieldContent,
@@ -32,8 +30,6 @@ import {
 } from "@/components/ui/select";
 import { useRegions } from "@/features/regions/hooks";
 
-// import { useCreateMonitor } from "../hooks";
-
 const formSchema = z.object({
 	name: z.string().min(1, "Name is required"),
 	url: z.url("Please enter a valid URL"),
@@ -41,57 +37,72 @@ const formSchema = z.object({
 	regionId: z.string(),
 });
 
-export function CreateMonitorForm() {
-	const [open, setOpen] = useState(false);
-	// const createMonitor = useCreateMonitor();
+type MonitorFormMode = "create" | "edit";
+
+type MonitorFormProps = {
+	mode: MonitorFormMode;
+	initialValues?: {
+		name: string;
+		url: string;
+		frequency: "1m" | "5m" | "10m" | "30m";
+		regionId: string;
+	};
+	onSubmit: (payload: {
+		name: string;
+		url: string;
+		frequency: number;
+		regionId: string;
+	}) => Promise<void> | void;
+};
+
+export function MonitorForm({
+	mode,
+	initialValues,
+	onSubmit,
+}: MonitorFormProps) {
+	const router = useRouter();
 	const { data: regions } = useRegions();
+
+	const isEdit = mode === "edit";
+
+	console.log("initialValues", initialValues);
+
 	const form = useForm({
 		defaultValues: {
-			name: "",
-			url: "https://",
-			frequency: "5m",
-			regionId: "",
+			name: initialValues?.name ?? "",
+			url: initialValues?.url ?? "https://",
+			frequency: initialValues?.frequency ?? "5m",
+			regionId: initialValues?.regionId ?? "",
 		},
 		validators: {
 			onSubmit: formSchema,
 			onChange: formSchema,
 		},
 		onSubmit: async ({ value }) => {
-			if (!value.regionId) {
-				toast.error("Please select a region");
-				return;
-			}
-			console.log(value);
-			// createMonitor.mutate({
-			// 	name: value.name,
-			// 	url: value.url,
-			// 	frequency: convertStringFrequencyToNumber(value.frequency),
-			// 	regionId: value.regionId,
-			// });
+			await onSubmit({
+				name: value.name,
+				url: value.url,
+				frequency: Number.parseInt(value.frequency, 10),
+				regionId: value.regionId,
+			});
 			form.reset();
-			setOpen(false);
+			router.push("/dashboard/monitors");
 		},
 	});
 
-	const convertStringFrequencyToNumber = (frequency: string) => {
-		if (frequency === "1m") return 60;
-		if (frequency === "5m") return 300;
-		if (frequency === "10m") return 600;
-		return 60;
-	};
-
 	return (
-		<Dialog open={open} onOpenChange={setOpen}>
-			<DialogTrigger asChild>
-				<Button>Create monitor</Button>
-			</DialogTrigger>
-			<DialogContent>
-				<DialogHeader>
-					<DialogTitle>Create Monitor</DialogTitle>
-					<DialogDescription>
-						Create a new monitor to track the availability of your website.
-					</DialogDescription>
-				</DialogHeader>
+		<Card className="w-full border-none shadow-none">
+			<CardHeader>
+				<CardTitle className="font-bold text-2xl">
+					{isEdit ? "Edit Monitor" : "Create Monitor"}
+				</CardTitle>
+				<CardDescription className="text-muted-foreground text-sm">
+					{isEdit
+						? "Update your monitor configuration."
+						: "Create a new monitor to track availability."}
+				</CardDescription>
+			</CardHeader>
+			<CardContent>
 				<form
 					id="create-monitor-form"
 					onSubmit={(e) => {
@@ -164,7 +175,9 @@ export function CreateMonitorForm() {
 										<RadioGroup
 											name={field.name}
 											value={field.state.value}
-											onValueChange={field.handleChange}
+											onValueChange={(value) => {
+												field.handleChange(value as typeof field.state.value);
+											}}
 											className="flex items-center gap-2"
 										>
 											{["1m", "5m", "10m"].map((f) => (
@@ -205,7 +218,9 @@ export function CreateMonitorForm() {
 										<Select
 											name={field.name}
 											value={field.state.value}
-											onValueChange={field.handleChange}
+											onValueChange={(value) => {
+												field.handleChange(value as typeof field.state.value);
+											}}
 										>
 											<SelectTrigger>
 												<SelectValue placeholder="Choose region" />
@@ -224,16 +239,18 @@ export function CreateMonitorForm() {
 						/>
 					</FieldGroup>
 				</form>
-				<Field orientation="horizontal" className="flex justify-end">
-					<Button
-						type="submit"
-						form="create-monitor-form"
-						disabled={form.state.isSubmitting}
-					>
-						{form.state.isSubmitting ? "Creating..." : "Create monitor"}
+				<Field orientation="horizontal" className="mt-4 flex justify-end">
+					<Button type="submit" form="create-monitor-form">
+						{form.state.isSubmitting
+							? isEdit
+								? "Updating..."
+								: "Creating..."
+							: isEdit
+								? "Update monitor"
+								: "Create monitor"}
 					</Button>
 				</Field>
-			</DialogContent>
-		</Dialog>
+			</CardContent>
+		</Card>
 	);
 }

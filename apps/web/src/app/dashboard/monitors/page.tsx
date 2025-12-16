@@ -5,7 +5,6 @@ import { Suspense } from "react";
 import {
 	MonitorContainer,
 	MonitorList,
-	MonitorLoading,
 } from "@/features/monitors/components/monitor";
 import { authClient } from "@/lib/auth-client";
 
@@ -19,7 +18,7 @@ export default function Page() {
 
 	return (
 		<MonitorContainer>
-			<Suspense fallback={<MonitorLoading />}>
+			<Suspense>
 				<MonitorList />
 			</Suspense>
 		</MonitorContainer>
