@@ -1,5 +1,4 @@
 import { auth } from "@better-uptime/auth";
-import { statusUpdateQueue } from "@better-uptime/queues";
 import "dotenv/config";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
@@ -57,13 +56,7 @@ app.get("/session", (c) => {
 app.route("/monitors", monitorRoutes);
 app.route("/regions", regionRoutes);
 
-// monitorEventsQueue.add("monitorCreated", {
-// 	monitorId: "766911df-4dd7-4d1d-b9eb-2463af7e5725",
-// 	monitorUrl: "https://www.google.com",
-// });
-
-// console.log("Monitor created job added");
-
-statusUpdateQueue.add("flushStatusBuffer", {}, { repeat: { every: 5000 } });
+// Start periodic flush of status buffer
+// statusUpdateQueue.add("flushStatusBuffer", {}, { repeat: { every: 5000 } });
 
 export default app;

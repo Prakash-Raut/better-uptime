@@ -1,8 +1,10 @@
 import { relations, sql } from "drizzle-orm";
 import {
+	boolean,
 	check,
 	index,
 	integer,
+	jsonb,
 	pgEnum,
 	pgTable,
 	text,
@@ -33,7 +35,9 @@ export const monitor = pgTable(
 		id: uuid("id").defaultRandom().primaryKey(),
 		name: text("name").notNull(),
 		url: varchar("url", { length: 2048 }).notNull(),
-		frequency: integer("frequency").notNull().default(60), // in seconds
+		intervalSec: integer("interval_sec").notNull().default(60), // in seconds
+		regions: jsonb("regions").$type<string[]>().notNull().default([]), // array of region codes
+		enabled: boolean("enabled").notNull().default(true),
 		userId: text("user_id")
 			.notNull()
 			.references(() => user.id, { onDelete: "cascade" }),
@@ -46,7 +50,8 @@ export const monitor = pgTable(
 	(table) => [
 		index("monitor_user_id_idx").on(table.userId),
 		index("monitor_url_idx").on(table.url),
-		check("monitor_frequency_check", sql`${table.frequency} > 0`),
+		index("monitor_enabled_idx").on(table.enabled),
+		check("monitor_interval_check", sql`${table.intervalSec} >= 30`),
 	],
 );
 

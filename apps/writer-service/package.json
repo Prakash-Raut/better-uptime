@@ -1,5 +1,5 @@
 {
-	"name": "worker-writer",
+	"name": "writer-service",
 	"main": "src/index.ts",
 	"type": "module",
 	"scripts": {

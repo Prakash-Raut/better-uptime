@@ -1,0 +1,17 @@
+{
+	"name": "@better-uptime/shared-types",
+	"version": "0.0.0",
+	"type": "module",
+	"exports": {
+		".": {
+			"default": "./src/index.ts"
+		}
+	},
+	"scripts": {},
+	"devDependencies": {
+		"@better-uptime/config": "workspace:*"
+	},
+	"peerDependencies": {
+		"typescript": "^5"
+	}
+}

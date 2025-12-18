@@ -8,6 +8,7 @@ import {
 	monitor,
 	tick,
 } from "@better-uptime/db";
+import { monitorEventsQueue } from "@better-uptime/queues";
 import { Hono } from "hono";
 import { validator } from "hono/validator";
 import { z } from "zod";
@@ -17,11 +18,16 @@ import type { AppContext } from "@/types";
 const schema = z.object({
 	name: z.string().min(1, "Name is required"),
 	url: z.url("Please enter a valid URL"),
-	frequency: z
+	intervalSec: z
 		.number()
 		.positive()
-		.min(30, "Frequency must be at least 30 seconds")
+		.min(30, "Interval must be at least 30 seconds")
 		.default(60),
+	regions: z
+		.array(z.string())
+		.min(1, "At least one region is required")
+		.default(["us-east"]),
+	enabled: z.boolean().default(true),
 });
 
 const querySchema = z.object({
@@ -50,21 +56,27 @@ monitorRoutes.post(
 			return ctx.json({ error: "Unauthorized" }, 401);
 		}
 
-		const { name, url, frequency } = ctx.req.valid("json");
+		const { name, url, intervalSec, regions, enabled } = ctx.req.valid("json");
 
 		const [createdMonitor] = await db
 			.insert(monitor)
 			.values({
 				name,
 				url,
-				frequency,
+				intervalSec,
+				regions,
+				enabled,
 				userId: user.id,
 			})
 			.returning();
 
-		// monitorEventsQueue.add("monitorCreated", {
-		// 	monitorId: createdMonitor?.id,
-		// });
+		// Trigger scheduler event
+		if (createdMonitor) {
+			await monitorEventsQueue.add("monitorCreated", {
+				event: "created",
+				monitorId: createdMonitor.id,
+			});
+		}
 
 		return ctx.json(createdMonitor, 201);
 	},
@@ -154,6 +166,95 @@ monitorRoutes.get("/:id", async (ctx) => {
 	}
 
 	return ctx.json(singleMonitor, 200);
+});
+
+monitorRoutes.put(
+	"/:id",
+	validator("json", (value, ctx) => {
+		const parsed = schema.partial().safeParse(value);
+		if (!parsed.success) {
+			return ctx.text(parsed.error.message, 400);
+		}
+		return parsed.data;
+	}),
+	async (ctx) => {
+		const user = ctx.get("user");
+		const id = ctx.req.param("id");
+
+		if (!id) {
+			return ctx.json({ error: "Monitor ID is required" }, 400);
+		}
+
+		if (!user) {
+			return ctx.json({ error: "Unauthorized" }, 401);
+		}
+
+		const updateData = ctx.req.valid("json");
+
+		// Verify monitor belongs to user
+		const [existing] = await db
+			.select()
+			.from(monitor)
+			.where(and(eq(monitor.id, id), eq(monitor.userId, user.id)))
+			.limit(1);
+
+		if (!existing) {
+			return ctx.json({ error: "Monitor not found" }, 404);
+		}
+
+		const [updatedMonitor] = await db
+			.update(monitor)
+			.set({
+				...updateData,
+				updatedAt: new Date(),
+			})
+			.where(eq(monitor.id, id))
+			.returning();
+
+		// Trigger scheduler event
+		if (updatedMonitor) {
+			await monitorEventsQueue.add("monitorUpdated", {
+				event: "updated",
+				monitorId: updatedMonitor.id,
+			});
+		}
+
+		return ctx.json(updatedMonitor, 200);
+	},
+);
+
+monitorRoutes.delete("/:id", async (ctx) => {
+	const user = ctx.get("user");
+	const id = ctx.req.param("id");
+
+	if (!id) {
+		return ctx.json({ error: "Monitor ID is required" }, 400);
+	}
+
+	if (!user) {
+		return ctx.json({ error: "Unauthorized" }, 401);
+	}
+
+	// Verify monitor belongs to user
+	const [existing] = await db
+		.select()
+		.from(monitor)
+		.where(and(eq(monitor.id, id), eq(monitor.userId, user.id)))
+		.limit(1);
+
+	if (!existing) {
+		return ctx.json({ error: "Monitor not found" }, 404);
+	}
+
+	await db.delete(monitor).where(eq(monitor.id, id));
+
+	// Trigger scheduler event
+	await monitorEventsQueue.add("monitorDeleted", {
+		event: "deleted",
+		monitorId: id,
+	});
+
+	return ctx.json({ message: "Monitor deleted" }, 200);
 });
 
 export { monitorRoutes };
