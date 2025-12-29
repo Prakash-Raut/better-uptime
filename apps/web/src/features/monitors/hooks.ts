@@ -8,7 +8,6 @@ import {
 	deleteMonitor,
 	getMonitor,
 	getMonitors,
-	type MonitorInput,
 	updateMonitor,
 } from "@/lib/api";
 import { monitorsParams } from "./params";
@@ -34,7 +33,7 @@ export const useMonitors = () => {
 export const useCreateMonitor = () => {
 	const queryClient = useQueryClient();
 	return useMutation({
-		mutationFn: (input: MonitorInput) => createMonitor(input),
+		mutationFn: (input: any) => createMonitor(input),
 		onSuccess: () => {
 			toast.success("Monitor created successfully");
 			queryClient.invalidateQueries({ queryKey: ["monitors"] });
@@ -50,7 +49,7 @@ export const useCreateMonitor = () => {
 export const useUpdateMonitor = () => {
 	const queryClient = useQueryClient();
 	return useMutation({
-		mutationFn: ({ id, input }: { id: string; input: Partial<MonitorInput> }) =>
+		mutationFn: ({ id, input }: { id: string; input: Partial<any> }) =>
 			updateMonitor(id, input),
 		onSuccess: () => {
 			toast.success("Monitor updated successfully");
