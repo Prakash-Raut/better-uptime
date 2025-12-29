@@ -104,3 +104,5 @@ export const tickRelations = relations(tick, ({ one }) => ({
 export type Region = typeof region.$inferSelect;
 export type Monitor = typeof monitor.$inferSelect;
 export type Tick = typeof tick.$inferSelect;
+
+export type TickInsert = typeof tick.$inferInsert;

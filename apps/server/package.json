@@ -10,19 +10,20 @@
 		"start": "bun run dist/index.mjs"
 	},
 	"dependencies": {
-		"hono": "^4.8.2",
-		"better-auth": "catalog:",
-		"dotenv": "catalog:",
-		"zod": "catalog:",
 		"@better-uptime/auth": "workspace:*",
 		"@better-uptime/db": "workspace:*",
 		"@better-uptime/queues": "workspace:*",
-		"@better-uptime/shared-types": "workspace:*"
+		"@better-uptime/shared-types": "workspace:*",
+		"better-auth": "catalog:",
+		"dotenv": "catalog:",
+		"hono": "^4.8.2",
+		"inngest": "^3.48.1",
+		"zod": "catalog:"
 	},
 	"devDependencies": {
-		"typescript": "^5.8.2",
+		"@better-uptime/config": "workspace:*",
 		"@types/bun": "^1.2.6",
 		"tsdown": "^0.16.5",
-		"@better-uptime/config": "workspace:*"
+		"typescript": "^5.8.2"
 	}
 }

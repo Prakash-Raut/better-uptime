@@ -1,3 +1,5 @@
+"use client";
+
 import CTA from "@/components/landing/cta";
 import Features from "@/components/landing/features";
 import Floating from "@/components/landing/floating";

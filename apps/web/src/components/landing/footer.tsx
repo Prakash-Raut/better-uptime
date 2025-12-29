@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { ModeToggle } from "../mode-toggle";
 
 const logo = {
 	src: "/uptime-logo.svg",
@@ -39,11 +40,11 @@ const menuItems = [
 		],
 	},
 ];
-const copyright = "© 2025 Uptime. All rights reserved.";
+const copyright = "© 2025 Better Uptime";
 
 export default function Footer() {
 	return (
-		<section className="py-6">
+		<section className="py-6 dark:bg-neutral-900">
 			<div className="container mx-auto max-w-6xl px-4 py-8 sm:px-6 md:px-8">
 				<footer>
 					<div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-6">
@@ -82,11 +83,12 @@ export default function Footer() {
 					</div>
 					<div className="mt-12 flex flex-col justify-between gap-4 border-t pt-6 font-medium text-muted-foreground text-xs sm:mt-16 sm:pt-8 md:mt-24 md:flex-row md:items-center md:text-sm">
 						<p>{copyright}</p>
-						<ul className="flex gap-4">
-							<li className="hover:text-primary">
-								<Link href="https://github.com/PrakashRaut">
-									<span>Made with ❤️ in India</span>
-								</Link>
+						<ul className="flex items-center gap-4">
+							<li>
+								<ModeToggle />
+							</li>
+							<li className="hover:text-rose-500">
+								<span>Made with ❤️ in India</span>
 							</li>
 						</ul>
 					</div>

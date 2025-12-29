@@ -72,7 +72,7 @@ export default function Pricing() {
 	const [selectedBillingPeriod, setSelectedBillingPeriod] = useState("monthly");
 
 	return (
-		<section className="w-full border-b">
+		<section className="w-full border-b dark:bg-neutral-950">
 			<div className="container mx-auto flex max-w-6xl flex-col items-center space-y-10 border-x px-8 py-5">
 				<h3 className="font-semibold text-2xl text-green-400 uppercase tracking-tight">
 					Pricing
@@ -109,6 +109,7 @@ export default function Pricing() {
 									className={cn("relative border bg-background p-6 px-8", {
 										"lg:-mx-2 z-1 overflow-hidden px-10 py-14 shadow-[0px_2px_10px_0px_rgba(0,0,0,0.1)]":
 											plan.isPopular,
+										"dark:bg-neutral-900": plan.isPopular,
 									})}
 								>
 									{plan.isPopular && (

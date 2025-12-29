@@ -3,11 +3,11 @@ import { Button } from "../ui/button";
 
 export default function Hero() {
 	return (
-		<section className="relative w-full border-b">
+		<section className="relative w-full border-b dark:bg-neutral-950">
 			<div className="container mx-auto flex min-h-[50vh] max-w-6xl flex-col items-center justify-center space-y-6 border-x px-4 py-8 sm:space-y-8 sm:px-6 sm:py-10 md:space-y-10 md:px-8 md:py-12 lg:min-h-screen lg:py-16">
 				<Badge
 					variant="outline"
-					className="bg-accent px-3 py-1 font-medium text-gray-600 text-xs sm:px-4 sm:py-1.5 sm:text-sm"
+					className="bg-accent px-3 py-1 font-medium text-xs sm:px-4 sm:py-1.5 sm:text-sm"
 				>
 					Coming soon
 				</Badge>

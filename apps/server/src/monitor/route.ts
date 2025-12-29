@@ -8,7 +8,6 @@ import {
 	monitor,
 	tick,
 } from "@better-uptime/db";
-import { monitorEventsQueue } from "@better-uptime/queues";
 import { Hono } from "hono";
 import { validator } from "hono/validator";
 import { z } from "zod";
@@ -69,14 +68,6 @@ monitorRoutes.post(
 				userId: user.id,
 			})
 			.returning();
-
-		// Trigger scheduler event
-		if (createdMonitor) {
-			await monitorEventsQueue.add("monitorCreated", {
-				event: "created",
-				monitorId: createdMonitor.id,
-			});
-		}
 
 		return ctx.json(createdMonitor, 201);
 	},
@@ -212,12 +203,6 @@ monitorRoutes.put(
 			.returning();
 
 		// Trigger scheduler event
-		if (updatedMonitor) {
-			await monitorEventsQueue.add("monitorUpdated", {
-				event: "updated",
-				monitorId: updatedMonitor.id,
-			});
-		}
 
 		return ctx.json(updatedMonitor, 200);
 	},
@@ -247,12 +232,6 @@ monitorRoutes.delete("/:id", async (ctx) => {
 	}
 
 	await db.delete(monitor).where(eq(monitor.id, id));
-
-	// Trigger scheduler event
-	await monitorEventsQueue.add("monitorDeleted", {
-		event: "deleted",
-		monitorId: id,
-	});
 
 	return ctx.json({ message: "Monitor deleted" }, 200);
 });

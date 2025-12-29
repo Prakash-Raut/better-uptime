@@ -1,8 +1,11 @@
-import { auth } from "@better-uptime/auth";
 import "dotenv/config";
+
+import { auth } from "@better-uptime/auth";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
+import { serve } from "inngest/hono";
+import { functions, inngest } from "./inngest";
 import { monitorRoutes } from "./monitor/route";
 import { regionRoutes } from "./region/route";
 import type { AppContext } from "./types";
@@ -19,6 +22,9 @@ app.use(
 		credentials: true,
 	}),
 );
+
+// Set up the "/api/inngest" (recommended) routes with the serve handler
+app.use("/api/inngest", serve({ client: inngest, functions }));
 
 app.use("*", async (c, next) => {
 	const session = await auth.api.getSession({ headers: c.req.raw.headers });

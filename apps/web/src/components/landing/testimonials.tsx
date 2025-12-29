@@ -36,7 +36,7 @@ const testimonial = {
 
 export default function Testimonials() {
 	return (
-		<section className="w-full border-b">
+		<section className="w-full border-b dark:bg-neutral-950">
 			<div className="container mx-auto flex max-w-6xl flex-col items-center space-y-6 border-x px-4 py-8 sm:space-y-8 sm:px-6 md:space-y-10 md:px-8 md:py-12">
 				<h3 className="scroll-m-20 font-semibold text-green-400 text-lg uppercase tracking-tight sm:text-xl md:text-2xl">
 					{testimonial.headline}

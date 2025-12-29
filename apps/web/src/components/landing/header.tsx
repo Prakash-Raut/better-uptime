@@ -4,7 +4,7 @@ import { Button } from "../ui/button";
 
 export default function Header() {
 	return (
-		<div className="w-full border-b">
+		<div className="w-full border-b dark:bg-neutral-950">
 			<div className="container mx-auto flex max-w-6xl flex-row items-center justify-between border-x px-4 py-4 sm:px-6 md:px-8 md:py-5">
 				<nav className="flex items-center gap-1.5 sm:gap-2">
 					<Image

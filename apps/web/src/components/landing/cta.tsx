@@ -8,7 +8,7 @@ const cta = {
 
 export default function CTA() {
 	return (
-		<section className="relative flex min-h-[calc(100vh-80px)] items-center justify-center overflow-hidden bg-linear-to-br from-green-300 via-green-50 to-green-300 py-12 sm:py-16 md:py-20 lg:min-h-screen lg:py-24">
+		<section className="relative flex min-h-[calc(100vh-80px)] items-center justify-center overflow-hidden bg-linear-to-br from-green-300 via-green-50 to-green-300 py-12 sm:py-16 md:py-20 lg:min-h-screen lg:py-24 dark:bg-linear-to-br dark:from-neutral-900 dark:via-neutral-950 dark:to-green-900">
 			<div className="relative z-10 mx-auto max-w-5xl px-4 text-center sm:px-6 md:px-8">
 				<h2 className="mb-6 font-bold text-3xl leading-tight sm:mb-8 sm:text-4xl md:mb-10 md:text-5xl lg:text-6xl xl:text-7xl">
 					{cta.headline}
