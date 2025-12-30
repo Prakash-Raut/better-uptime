@@ -22,6 +22,12 @@ const scheduler = inngest.createFunction(
 
 		await xAddBulk(streamPayload);
 
+		console.log("Finished scheduling monitors", monitors.length);
+
+		await inngest.send({
+			name: "monitor.check",
+		});
+
 		return { scheduled: monitors.length };
 	},
 );

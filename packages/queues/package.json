@@ -18,7 +18,6 @@
 	},
 	"dependencies": {
 		"@better-uptime/db": "workspace:*",
-		"bullmq": "^5.66.0",
 		"dotenv": "catalog:",
 		"ioredis": "^5.8.2"
 	}

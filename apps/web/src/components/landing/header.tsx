@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 
 export default function Header() {
@@ -12,22 +15,37 @@ export default function Header() {
 						alt="Uptime"
 						width={40}
 						height={40}
-						className="h-8 w-8 sm:h-10 sm:w-10"
+						className="h-8 w-8 transition-transform duration-300 hover:scale-110 sm:h-10 sm:w-10"
 					/>
-					<span className="font-medium text-lg sm:text-xl md:text-2xl">
+					<span className="font-medium text-lg transition-colors duration-200 hover:text-primary sm:text-xl md:text-2xl">
 						Better Uptime
 					</span>
 				</nav>
 				{/* Desktop Menu */}
 				<div className="hidden items-center gap-2 sm:flex">
-					<Button variant="outline" asChild size="sm">
+					<Button
+						variant="outline"
+						asChild
+						size="sm"
+						className="transition-all duration-200 hover:scale-105 hover:shadow-md"
+					>
 						<Link href="/login">Login</Link>
 					</Button>
-					<Button size="sm">Try for free</Button>
+					<Button
+						size="sm"
+						className="transition-all duration-200 hover:scale-105 hover:shadow-md"
+					>
+						Try for free
+					</Button>
 				</div>
 				{/* Mobile Menu - Single Button */}
 				<div className="flex items-center sm:hidden">
-					<Button size="sm">Try for free</Button>
+					<Button
+						size="sm"
+						className="transition-all duration-200 hover:scale-105 hover:shadow-md"
+					>
+						Try for free
+					</Button>
 				</div>
 			</div>
 		</div>

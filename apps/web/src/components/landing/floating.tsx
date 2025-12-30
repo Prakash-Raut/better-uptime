@@ -1,5 +1,7 @@
 "use client";
 
+import { useScrollAnimation } from "@/hooks/use-scroll-animation";
+import { cn } from "@/lib/utils";
 import { Marquee } from "../ui/marquee";
 import {
 	Logo01,
@@ -13,10 +15,17 @@ import {
 } from "./logos";
 
 export default function Floating() {
+	const { ref, isVisible } = useScrollAnimation({ threshold: 0.2 });
+
 	return (
-		<section className="w-full border-b dark:bg-neutral-950">
+		<section ref={ref} className="w-full border-b dark:bg-neutral-950">
 			<div className="container mx-auto flex max-w-6xl flex-col items-center space-y-6 border-x px-4 py-8 sm:space-y-8 sm:px-6 md:space-y-10 md:px-8 md:py-12">
-				<div className="flex h-[80px] w-full items-center justify-center sm:h-[100px] md:h-[125px]">
+				<div
+					className={cn(
+						"flex h-[80px] w-full items-center justify-center transition-all duration-700 sm:h-[100px] md:h-[125px]",
+						isVisible ? "animate-fade-in opacity-100" : "opacity-0",
+					)}
+				>
 					<div className="w-full max-w-full sm:max-w-xl md:max-w-4xl lg:max-w-6xl">
 						<Marquee
 							pauseOnHover

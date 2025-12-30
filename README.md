@@ -5,13 +5,15 @@ This project was created with [Better-T-Stack](https://github.com/AmanVarshney01
 ## Features
 
 - **TypeScript** - For type safety and improved developer experience
-- **Next.js** - Full-stack React framework
+- **Next.js** - Full-stack React framework for the web application
 - **TailwindCSS** - Utility-first CSS for rapid UI development
 - **shadcn/ui** - Reusable UI components
 - **Hono** - Lightweight, performant server framework
 - **Bun** - Runtime environment
 - **Drizzle** - TypeScript-first ORM
 - **PostgreSQL** - Database engine
+- **Inngest** - Background job processing and task scheduling
+- **Redis Streams** - Task queuing system
 - **Authentication** - Better-Auth
 - **Biome** - Linting and formatting
 - **PWA** - Progressive Web App support
@@ -58,20 +60,13 @@ The API is running at [http://localhost:3000](http://localhost:3000).
 better-uptime/
 ├── apps/
 │   ├── web/              # Frontend application (Next.js)
-│   ├── server/           # API Service (Hono) - Monitor CRUD
-│   ├── scheduler-service # Scheduler Service - Time-bucket scheduling
-│   ├── worker-check      # Checker Service - HTTP probe workers
-│   ├── evaluator-service # Evaluator Service - State evaluation
-│   ├── alert-service     # Alert Service - Alert delivery
-│   └── worker-writer     # Writer Service - Bulk DB writes
+│   └── server/           # Backend API (Hono) - Handles all monitor operations and background tasks via Inngest
 ├── packages/
 │   ├── shared-types      # Shared TypeScript types
 │   ├── auth/             # Authentication configuration & logic
 │   ├── db/               # Database schema & queries
-│   └── queues/           # Queue configuration (BullMQ)
+│   └── queues/           # Redis streams configuration for task queuing
 ```
-
-See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed architecture documentation.
 
 ## Available Scripts
 
@@ -79,32 +74,40 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed architecture documentation
 - `pnpm run build`: Build all applications
 - `pnpm run dev:web`: Start only the web application
 - `pnpm run dev:server`: Start only the API server
-- `pnpm run dev:scheduler`: Start scheduler service
-- `pnpm run dev:checker`: Start checker service
-- `pnpm run dev:evaluator`: Start evaluator service
-- `pnpm run dev:alert`: Start alert service
-- `pnpm run dev:writer`: Start writer service
 - `pnpm run check-types`: Check TypeScript types across all apps
 - `pnpm run db:push`: Push schema changes to database
 - `pnpm run db:studio`: Open database studio UI
-- `pnpm run check`: Run Biome formatting and linting
+- `pnpm run db:generate`: Generate database migrations
+- `pnpm run db:migrate`: Run database migrations
+- `pnpm run format`: Format code with Biome
 - `cd apps/web && pnpm run generate-pwa-assets`: Generate PWA assets
 
-## Running the Uptime Monitoring Backend
+## Architecture
 
-The uptime monitoring system consists of multiple services that work together:
+Better Uptime uses a simplified, modern architecture:
 
-1. **API Service** - Handles monitor CRUD operations
-2. **Scheduler Service** - Schedules checks based on monitor intervals
-3. **Checker Service** - Executes HTTP checks
-4. **Evaluator Service** - Evaluates results and detects state changes
-5. **Alert Service** - Sends alerts on state transitions
-6. **Writer Service** - Bulk writes check results to database
+### Core Components
+
+1. **Web Application** (Next.js) - Client-side web application for managing monitors and viewing status
+2. **Server** (Hono) - Unified backend API that handles:
+   - Monitor CRUD operations
+   - Background task scheduling via **Inngest**
+   - Monitor health checks and status updates
+   - All business logic in a single service
+
+### Background Processing
+
+- **Inngest** - Handles all scheduled tasks and background jobs:
+  - Cron-based scheduler that runs every 5 minutes
+  - Monitor check execution
+  - Status evaluation and updates
+- **Redis Streams** - Used for queuing monitor checks between scheduler and checker functions
 
 ### Prerequisites
 
 - PostgreSQL database
-- Redis instance
+- Redis instance (for streams)
+- Inngest account and API key
 - Environment variables configured (see `apps/server/.env.example`)
 
 ### Quick Start
@@ -116,13 +119,11 @@ pnpm install
 # Set up database schema
 pnpm db:push
 
-# Start all services (in separate terminals)
-pnpm dev:server      # Terminal 1
-pnpm dev:scheduler   # Terminal 2
-pnpm dev:checker     # Terminal 3
-pnpm dev:evaluator   # Terminal 4
-pnpm dev:alert       # Terminal 5
-pnpm dev:writer      # Terminal 6
+# Start the application
+pnpm run dev          # Starts both web and server
+# OR separately:
+pnpm dev:web          # Start web app only
+pnpm dev:server       # Start server only
 ```
 
-For production, use a process manager like PM2 or Docker Compose to orchestrate all services.
+The server integrates with Inngest for background task processing. Make sure your Inngest configuration is set up in your environment variables.
