@@ -79,7 +79,7 @@ const recordTicks = inngest.createFunction(
 	{
 		id: "record-ticks",
 		batchEvents: {
-			maxSize: 100,
+			maxSize: 5,
 			timeout: "5s",
 			key: "event.data.userId",
 		},
