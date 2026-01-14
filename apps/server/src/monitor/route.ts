@@ -1,3 +1,5 @@
+import { authGuard } from "@/middlewares/authGuard";
+import type { AppContext } from "@/types";
 import {
 	and,
 	count,
@@ -11,21 +13,10 @@ import {
 import { Hono } from "hono";
 import { validator } from "hono/validator";
 import { z } from "zod";
-import { authGuard } from "@/middlewares/authGuard";
-import type { AppContext } from "@/types";
 
 const schema = z.object({
 	name: z.string().min(1, "Name is required"),
 	url: z.url("Please enter a valid URL"),
-	intervalSec: z
-		.number()
-		.positive()
-		.min(30, "Interval must be at least 30 seconds")
-		.default(60),
-	regions: z
-		.array(z.string())
-		.min(1, "At least one region is required")
-		.default(["us-east"]),
 	enabled: z.boolean().default(true),
 });
 
@@ -55,15 +46,14 @@ monitorRoutes.post(
 			return ctx.json({ error: "Unauthorized" }, 401);
 		}
 
-		const { name, url, intervalSec, regions, enabled } = ctx.req.valid("json");
+		const { name, url, enabled } = ctx.req.valid("json");
 
 		const [createdMonitor] = await db
 			.insert(monitor)
 			.values({
 				name,
 				url,
-				intervalSec,
-				regions,
+				intervalSec: 300,
 				enabled,
 				userId: user.id,
 			})

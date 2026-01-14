@@ -1,7 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { Suspense } from "react";
 import { DataTable } from "@/components/data-table/data-table";
 import {
 	EntityContainer,
@@ -13,6 +11,8 @@ import {
 } from "@/components/entity";
 import { Button } from "@/components/ui/button";
 import { useEntitySearch } from "@/hooks/use-entity-search";
+import { useRouter } from "next/navigation";
+import { Suspense } from "react";
 import { useMonitorParams, useMonitors } from "../hooks";
 import { monitorColumn } from "./monitor-column";
 
@@ -106,25 +106,25 @@ export const MonitorList = () => {
 
 	const handlePaginationChange = (updater: any) => {
 		const next = updater({
-			pageIndex: params.page,
+			pageIndex: params.page - 1,
 			pageSize: params.pageSize,
 		});
 
 		setParams({
 			...params,
-			page: next.pageIndex,
+			// Convert back to 1-based page for params/API
+			page: next.pageIndex + 1,
 			pageSize: next.pageSize,
 		});
-
-		console.log("next pagination:", next);
 	};
 
 	return (
 		<DataTable
 			columns={monitorColumn}
 			data={monitors?.items ?? []}
-			pageCount={monitors?.totalPages ?? 0}
-			pagination={{ pageIndex: params.page, pageSize: params.pageSize }}
+			pageCount={monitors?.totalPages ?? 1}
+			// DataTable expects 0-based pageIndex
+			pagination={{ pageIndex: params.page - 1, pageSize: params.pageSize }}
 			onPaginationChange={handlePaginationChange}
 		/>
 	);

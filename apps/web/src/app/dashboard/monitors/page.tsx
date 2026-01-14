@@ -1,19 +1,25 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
 	MonitorContainer,
 	MonitorList,
 } from "@/features/monitors/components/monitor";
 import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
+import { Suspense } from "react";
 
 export default function Page() {
 	const router = useRouter();
-	const { data: session } = authClient.useSession();
+	const { data: session, isPending } = authClient.useSession();
 
-	if (!session) {
+	if (isPending) {
+		return <Skeleton className="h-full w-full" />;
+	}
+
+	if (!session || !session.user) {
 		router.replace("/login");
+		return null;
 	}
 
 	return (

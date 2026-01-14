@@ -114,22 +114,6 @@ export const monitorColumn: ColumnDef<Monitor>[] = [
 		},
 	},
 	{
-		accessorKey: "regions",
-		header: "Regions",
-		cell: ({ row }) => {
-			const regions = row.original.regions;
-			return (
-				<div className="flex flex-wrap gap-1">
-					{regions.map((region) => (
-						<Badge key={region} variant="outline" className="text-xs">
-							{region}
-						</Badge>
-					))}
-				</div>
-			);
-		},
-	},
-	{
 		id: "actions",
 		cell: ({ row }) => <MonitorActions monitor={row.original} />,
 	},

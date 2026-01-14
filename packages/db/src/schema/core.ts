@@ -4,7 +4,6 @@ import {
 	check,
 	index,
 	integer,
-	jsonb,
 	pgEnum,
 	pgTable,
 	text,
@@ -35,8 +34,7 @@ export const monitor = pgTable(
 		id: uuid("id").defaultRandom().primaryKey(),
 		name: text("name").notNull(),
 		url: varchar("url", { length: 2048 }).notNull(),
-		intervalSec: integer("interval_sec").notNull().default(60), // in seconds
-		regions: jsonb("regions").$type<string[]>().notNull().default([]), // array of region codes
+		intervalSec: integer("interval_sec").notNull().default(300), // in seconds
 		enabled: boolean("enabled").notNull().default(true),
 		userId: text("user_id")
 			.notNull()

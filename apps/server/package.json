@@ -12,7 +12,6 @@
 	"dependencies": {
 		"@better-uptime/auth": "workspace:*",
 		"@better-uptime/db": "workspace:*",
-		"@better-uptime/queues": "workspace:*",
 		"@better-uptime/shared-types": "workspace:*",
 		"better-auth": "catalog:",
 		"dotenv": "catalog:",

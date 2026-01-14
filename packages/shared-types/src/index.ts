@@ -1,7 +1,3 @@
-/**
- * Shared types for the Better Uptime monitoring system
- */
-
 export interface Monitor {
 	id: string;
 	userId: string;

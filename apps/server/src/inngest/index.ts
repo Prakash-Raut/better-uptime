@@ -1,99 +1,106 @@
-import { and, db, eq, monitor, type TickInsert, tick } from "@better-uptime/db";
-import { xAckBulk, xAddBulk, xReadGroup } from "@better-uptime/queues";
-import { Inngest, type InngestFunction } from "inngest";
+import { db, eq, monitor, region, tick } from "@better-uptime/db";
+import { Inngest } from "inngest";
 
 export const inngest = new Inngest({ id: "better-uptime" });
 
 const scheduler = inngest.createFunction(
 	{ id: "scheduler" },
-	{ cron: "*/5 * * * *" }, // Run every 5 minute
+	{ cron: "*/5 * * * *" }, // every 5 minutes
 	async () => {
-		console.log("Scheduler function called");
-
 		const monitors = await db
 			.select()
 			.from(monitor)
-			.where(and(eq(monitor.enabled, true)));
+			.where(eq(monitor.enabled, true));
 
-		const streamPayload = monitors.map((m) => ({
-			monitorId: m.id,
-			url: m.url,
-		}));
-
-		await xAddBulk(streamPayload);
-
-		console.log("Finished scheduling monitors", monitors.length);
-
-		await inngest.send({
-			name: "monitor.check",
-		});
+		await Promise.all(
+			monitors.map((m) =>
+				inngest.send({
+					name: "monitor.check.requested",
+					data: {
+						monitorId: m.id,
+						url: m.url,
+						userId: m.userId,
+					},
+				}),
+			),
+		);
 
 		return { scheduled: monitors.length };
 	},
 );
 
 const checker = inngest.createFunction(
-	{ id: "monitor-checker" },
-	{ event: "monitor.check" },
-	async ({ step }) => {
-		console.log("Checker function called");
+	{
+		id: "monitor-checker",
+		concurrency: 50, // control load
+		retries: 3, // auto retry
+	},
+	{ event: "monitor.check.requested" },
+	async ({ event, step }) => {
+		const { monitorId, url, userId } = event.data;
 
-		const groupName = "monitor-group";
-		const consumerName = "us-east";
+		const regions = await db.select().from(region);
 
-		const messageIds: string[] = [];
-		const urls: string[] = [];
+		const start = Date.now();
 
-		const res: any = await xReadGroup(groupName, consumerName);
+		let status = "down";
+		let errorMessage: any;
 
-		if (res) {
-			const [, messages] = res[0];
-
-			for (const [id, fields] of messages) {
-				// fields = ["https://www.google.com", "something"]
-				const url = fields[0]; // first element is URL
-				urls.push(url);
-				messageIds.push(id);
-			}
+		try {
+			const res = await step.fetch(url);
+			status = res.ok ? "up" : "down";
+		} catch (err) {
+			errorMessage = err.message;
 		}
 
-		console.log("urls", urls);
-		console.log("messageIds", messageIds);
+		const responseTime = Date.now() - start;
 
-		const startTime = Date.now();
-		const responses = await Promise.all(
-			urls.map(async (url) => {
-				return step.fetch(url);
-			}),
+		await Promise.all(
+			regions.map((r) =>
+				inngest.send({
+					name: "monitor.check.completed",
+					data: {
+						monitorId,
+						userId,
+						status,
+						responseTime,
+						errorMessage,
+						regionId: r.id,
+					},
+				}),
+			),
 		);
 
-		const statuses = await Promise.all(responses.map((res) => res.status));
-		const endTime = Date.now();
-		const responseTime = endTime - startTime;
-
-		const monitorStatusMap = new Map<string, number>();
-		for (let i = 0; i < urls.length; i++) {
-			monitorStatusMap.set(urls[i]!, statuses[i]!);
-		}
-
-		const ticks: TickInsert[] = [
-			{
-				status: "up",
-				responseTime: responseTime,
-				monitorId: "f9ab4be9-ce1f-47e1-ba59-908b2b7ec86d",
-				regionId: "09cce0be-ee8f-4118-b5e2-8484864996e9",
-			},
-		];
-
-		await db.insert(tick).values(ticks);
-		console.log("Ticks inserted successfully", ticks);
-
-		xAckBulk(groupName, messageIds);
-		console.log("Messages acknowledged successfully", messageIds);
+		return { checked: regions.length };
 	},
 );
 
-export const functions: InngestFunction<any, any, any, any, any, any>[] = [
-	scheduler,
-	checker,
-];
+const recordTicks = inngest.createFunction(
+	{
+		id: "record-ticks",
+		batchEvents: {
+			maxSize: 100,
+			timeout: "5s",
+			key: "event.data.userId",
+		},
+	},
+	{ event: "monitor.check.completed" },
+	async ({ events, step }) => {
+		const rows = events.map((evt) => ({
+			monitorId: evt.data.monitorId,
+			user_id: evt.data.userId,
+			status: evt.data.status,
+			responseTime: evt.data.responseTime,
+			errorMessage: evt.data.errorMessage,
+			regionId: evt.data.regionId,
+		}));
+
+		await step.run("insert-ticks", async () => {
+			return db.insert(tick).values(rows);
+		});
+
+		return { inserted: rows.length };
+	},
+);
+
+export const functions = [scheduler, checker, recordTicks];

@@ -31,7 +31,13 @@
 		"enabled": true,
 		"indentStyle": "tab"
 	},
-	"assist": { "actions": { "source": { "organizeImports": "on" } } },
+	"assist": {
+		"actions": {
+			"source": {
+				"organizeImports": "off"
+			}
+		}
+	},
 	"linter": {
 		"enabled": true,
 		"rules": {
@@ -42,7 +48,7 @@
 			},
 			"nursery": {
 				"useSortedClasses": {
-					"level": "warn",
+					"level": "off",
 					"fix": "safe",
 					"options": {
 						"functions": ["clsx", "cva", "cn"]
