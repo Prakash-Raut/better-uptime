@@ -32,7 +32,7 @@ const scheduler = inngest.createFunction(
 const checker = inngest.createFunction(
 	{
 		id: "monitor-checker",
-		concurrency: 50, // control load
+		concurrency: 5, // control load
 		retries: 3, // auto retry
 	},
 	{ event: "monitor.check.requested" },
